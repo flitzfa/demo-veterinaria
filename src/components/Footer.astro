@@ -1,0 +1,38 @@
+---
+// Footer de Veterinaria Trébol
+import Logo from './Logo.astro';
+import { business } from '../config/business';
+---
+
+<footer class="bg-brand-ink-dark text-gray-300" role="contentinfo">
+  <div class="container-main py-12 lg:py-16">
+    <div class="flex flex-col md:flex-row gap-8 md:justify-between md:items-start mb-10">
+      <div>
+        <a href={import.meta.env.BASE_URL + '#inicio'} class="inline-block mb-4" aria-label={business.fullName + ' - Inicio'}>
+          <Logo dark />
+        </a>
+        <p class="text-gray-400 max-w-sm leading-relaxed">{business.tagline}.</p>
+      </div>
+
+      <dl class="space-y-2 text-sm min-w-60">
+        {business.hours.map((h) => (
+          <div class="flex justify-between gap-6 border-b border-white/10 pb-2">
+            <dt class="text-gray-300">{h.label}</dt>
+            <dd class="text-trebol-200">{h.ranges.join(' / ')}</dd>
+          </div>
+        ))}
+        <div class="flex justify-between gap-6">
+          <dt class="text-gray-300">{business.closedLabel}</dt>
+          <dd class="text-gray-500">Cerrado</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="border-t border-white/10 pt-6 flex flex-col md:flex-row gap-2 md:justify-between text-sm text-gray-400 text-center md:text-left">
+      <p>Veterinaria ficticia. Los datos de esta página son de ejemplo.</p>
+      <p>
+        Demo diseñada y desarrollada por <a href={business.flitzfaUrl} target="_blank" rel="noopener" class="underline hover:text-white">flitzfa</a>
+      </p>
+    </div>
+  </div>
+</footer>

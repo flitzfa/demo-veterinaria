@@ -1,0 +1,12 @@
+{
+  "name": "Veterinaria Trébol (demo)",
+  "short_name": "Trébol",
+  "description": "Veterinaria ficticia: demo de web para veterinaria hecha por flitzfa.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fbf6ee",
+  "theme_color": "#22314f",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

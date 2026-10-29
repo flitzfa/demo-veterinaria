@@ -1,0 +1,39 @@
+---
+// Horarios y zona de Veterinaria Trébol (sin dirección: negocio ficticio)
+import WhatsAppIcon from './icons/WhatsAppIcon.astro';
+import { business } from '../config/business';
+import foto from '../assets/images/control-mesa.jpg';
+import { Image } from 'astro:assets';
+---
+
+<section id="horarios" class="section bg-brand-cream">
+  <div class="container-main grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+    <div>
+      <span class="badge-primary mb-4 inline-block">Horarios de ejemplo</span>
+      <h2 class="mb-4 text-balance">Cuándo atendemos</h2>
+      <p class="text-lg text-gray-600 mb-8 text-balance">Estamos en {business.area}. Es un negocio ficticio, así que no hay dirección real.</p>
+
+      <div class="card p-6 md:p-7 mb-6">
+        <dl class="space-y-1 text-gray-600">
+          {business.hours.map((h) => (
+            <div class="flex justify-between gap-4 py-3 border-b border-trebol-100">
+              <dt class="font-medium text-gray-900">{h.label}</dt>
+              <dd class="text-brand-ink font-semibold">{h.ranges.map((r) => r.replace('-', ' a ')).join(' y ')} hs</dd>
+            </div>
+          ))}
+          <div class="flex justify-between gap-4 py-3">
+            <dt class="font-medium text-gray-900">{business.closedLabel}</dt>
+            <dd class="text-gray-400">Cerrado</dd>
+          </div>
+        </dl>
+      </div>
+
+      <button type="button" data-wa={business.whatsappMessages.general} class="btn-whatsapp w-full sm:w-auto">
+        <WhatsAppIcon class="w-5 h-5" />
+        Escribinos por WhatsApp
+      </button>
+    </div>
+
+    <Image src={foto} alt="Perro pomerania tranquilo en la mesa de atención, con dos personas cuidándolo" widths={[480, 800, 1200]} sizes="(min-width: 1024px) 50vw, 100vw" class="w-full aspect-[4/3] object-cover rounded-3xl shadow-card-hover" />
+  </div>
+</section>

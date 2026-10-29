@@ -1,0 +1,83 @@
+---
+// Hero de Veterinaria Trébol: estado abierto/cerrado según los horarios de ejemplo
+import WhatsAppIcon from './icons/WhatsAppIcon.astro';
+import { business } from '../config/business';
+import hero from '../assets/images/consultorio-perro.jpg';
+import { Image } from 'astro:assets';
+---
+
+<section id="inicio" class="relative pt-32 md:pt-40 pb-16 md:pb-24 bg-brand-cream overflow-hidden isolate">
+  <div class="container-main grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+    <div>
+      <!-- Estado actual según el horario -->
+      <div class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white border border-trebol-100 shadow-card mb-6">
+        <span class="flex items-center gap-2 text-sm text-gray-700">
+          <span class="relative flex h-2.5 w-2.5 flex-shrink-0">
+            <span id="hero-status-ping" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 hidden"></span>
+            <span id="hero-status-dot-inner" class="relative inline-flex rounded-full h-2.5 w-2.5 bg-gray-400"></span>
+          </span>
+          <span id="hero-status-text">Calculando horario…</span>
+        </span>
+      </div>
+
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.05] text-balance mb-5">
+        Cuidamos a tu perro o tu gato <span class="text-brand-coral">como en casa.</span>
+      </h1>
+
+      <p class="max-w-xl text-lg md:text-xl text-gray-600 leading-relaxed text-balance mb-8">
+        Consultas con turno, vacunas y controles en {business.area}. Pedís turno por WhatsApp y te confirmamos el horario.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-3">
+        <button type="button" data-wa={business.whatsappMessages.turno} class="btn-whatsapp w-full sm:w-auto">
+          <WhatsAppIcon class="w-5 h-5" />
+          Pedir turno por WhatsApp
+        </button>
+        <a href="#servicios" class="btn-secondary w-full sm:w-auto">Ver servicios</a>
+      </div>
+    </div>
+
+    <Image src={hero} alt="Perro pomerania sentado en la mesa del consultorio mientras lo revisan" widths={[480, 800, 1200]} sizes="(min-width: 1024px) 50vw, 100vw" class="w-full aspect-[4/3] object-cover rounded-3xl shadow-card-hover" loading="eager" />
+  </div>
+</section>
+
+<script define:vars={{ hours: business.hours }}>
+  // Calcula abierto/cerrado en hora de Buenos Aires con los horarios de business.ts
+  const toMin = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+  const dayNames = ['el domingo', 'el lunes', 'el martes', 'el miércoles', 'el jueves', 'el viernes', 'el sábado'];
+  const rangesFor = (day) => hours.filter((h) => h.days.includes(day)).flatMap((h) => h.ranges.map((r) => r.split('-')));
+
+  function updateOpenStatus() {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Argentina/Buenos_Aires', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+    }).formatToParts(new Date());
+    const get = (type) => parts.find((p) => p.type === type)?.value;
+    const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
+    const now = Number(get('hour')) * 60 + Number(get('minute'));
+
+    const current = rangesFor(day).find(([from, to]) => now >= toMin(from) && now < toMin(to));
+    let text;
+    if (current) {
+      text = `Abierto ahora · Cierra a las ${current[1]}`;
+    } else {
+      text = 'Cerrado ahora';
+      for (let i = 0; i < 7; i++) {
+        const d = (day + i) % 7;
+        const next = rangesFor(d).find(([from]) => i > 0 || toMin(from) > now);
+        if (next) {
+          text += ` · Abre ${i === 0 ? 'hoy' : i === 1 ? 'mañana' : dayNames[d]} a las ${next[0]}`;
+          break;
+        }
+      }
+    }
+
+    document.getElementById('hero-status-ping')?.classList.toggle('hidden', !current);
+    const dot = document.getElementById('hero-status-dot-inner');
+    if (dot) dot.style.backgroundColor = current ? '#22c55e' : '#9ca3af';
+    const label = document.getElementById('hero-status-text');
+    if (label) label.textContent = text;
+  }
+
+  updateOpenStatus();
+  setInterval(updateOpenStatus, 60000);
+</script>

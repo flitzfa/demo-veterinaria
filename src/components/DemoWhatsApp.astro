@@ -1,0 +1,40 @@
+---
+// WhatsApp de ejemplo: los botones con data-wa abren este diálogo con el mensaje armado, sin enviarlo
+---
+
+<dialog id="wa-demo" aria-labelledby="wa-demo-title" class="m-auto w-[min(440px,calc(100%-2rem))] rounded-2xl p-6 md:p-8 bg-white text-gray-900 shadow-card-hover backdrop:bg-brand-ink/60">
+  <h2 id="wa-demo-title" class="text-2xl md:text-2xl mb-2">Mensaje de ejemplo</h2>
+  <p class="text-gray-600 text-sm leading-relaxed">En una web real, este botón abre WhatsApp con el mensaje listo. Como es una demo, no se envía a ningún número.</p>
+  <p id="wa-demo-msg" class="my-5 rounded-xl bg-[#DCF8C6] p-4 text-[#10202B] whitespace-pre-wrap"></p>
+  <div class="flex flex-wrap gap-3">
+    <button type="button" id="wa-demo-copy" class="btn-primary">Copiar mensaje</button>
+    <button type="button" id="wa-demo-close" class="btn-outline">Cerrar</button>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('wa-demo') as HTMLDialogElement | null;
+  const msg = document.getElementById('wa-demo-msg');
+  const copy = document.getElementById('wa-demo-copy');
+
+  if (dialog && msg && copy) {
+    document.querySelectorAll<HTMLElement>('[data-wa]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        msg.textContent = btn.dataset.wa ?? '';
+        copy.textContent = 'Copiar mensaje';
+        dialog.showModal();
+      });
+    });
+
+    copy.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(msg.textContent ?? '');
+        copy.textContent = 'Copiado';
+      } catch {
+        copy.textContent = 'No se pudo copiar';
+      }
+    });
+    document.getElementById('wa-demo-close')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+  }
+</script>

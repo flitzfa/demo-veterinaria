@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://veterinaria.flitzfa.com.ar/sitemap-index.xml
